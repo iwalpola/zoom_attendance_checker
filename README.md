@@ -25,6 +25,7 @@ This is a tool to compare a comma separated list of your students with zoom acti
 - Find your meeting and click the blue link in the 'participants' column to bring up the list of attendees
 - Check the box to "Show Unique Users", and click "Export" button
 - Save the csv file in /attendance folder as '13C.csv'
+- Change line 7 of the zoom_attendance_checker.dart file
 - Do the following
 ```sh
 [root of this repo]>dart run ./bin/zoom_attendance_checker.dart -a
