@@ -48,6 +48,7 @@ Future<void> dcat({bool showAttendance = false}) async {
             if (record[0].toLowerCase().contains(student[0].toLowerCase())) {
               student[2] = 'present';
               presentCount++;
+              attendanceList.remove(record);
               break;
             }
           }
@@ -56,6 +57,7 @@ Future<void> dcat({bool showAttendance = false}) async {
         stdout.writeln('$className has ' +
             studentsList.length.toString() +
             ' students, out of which $presentCount are present');
+        stdout.writeln('unaccounted attendees' + attendanceList.toString());
       }
     }
   }
