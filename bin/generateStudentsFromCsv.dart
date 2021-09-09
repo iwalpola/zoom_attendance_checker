@@ -1,8 +1,6 @@
 import 'package:csv/csv.dart';
 import 'dart:io';
 
-import 'models.dart';
-
 final Directory currentDir = Directory.current;
 final classes = ['9C', '10A', '10D', '13A', '12K'];
 final File dataFile = File('./data.dart');

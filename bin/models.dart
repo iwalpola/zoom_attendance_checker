@@ -17,9 +17,9 @@ class Student {
 }
 
 class Meeting {
-  final String date, meetingId;
+  final String date;
   Map<String, Attendee> attendees = {};
-  Meeting({required this.date, required this.meetingId});
+  Meeting({required this.date});
 }
 
 class Attendee {
