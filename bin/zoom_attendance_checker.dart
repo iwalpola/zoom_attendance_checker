@@ -70,27 +70,25 @@ void populateMeetingsInClassSets() {
         isFirstRowOfThisMeeting = false;
       }
       //add meeting to classSet if not already added
-      stdout.writeln('isFirstrow: ' + isFirstRowOfThisMeeting.toString());
       var _meeting = isFirstRowOfThisMeeting
           ? addMeetingToClassSet(
               date: activeHostsRow[8].toString(), classSet: classSet)
           : classSet.meetings[activeHostsRow[8].toString()];
-      stdout.writeln('activeHostsRow[8]: ' + activeHostsRow[8].toString());
       //add attendee to meeting if not already added
       addAttendeeToMeeting(
           meeting: _meeting!,
           name: activeHostsRow[12],
           email: activeHostsRow[13]);
-      //activeHostsRowList.remove(activeHostsRow);
-      stdout.writeln(activeHostsRow[12]);
+      //TODO: activeHostsRowList.remove(activeHostsRow);
     }
   }
 }
 
 Meeting addMeetingToClassSet(
     {required String date, required ClassSet classSet}) {
-  stdout.writeln('triny to add meeting to classSet');
   if (classSet.meetings.isEmpty || !classSet.meetings.containsKey(date)) {
+    stdout
+        .writeln('adding meeting on $date to classSet ' + classSet.displayName);
     return classSet.meetings.putIfAbsent(date, () => Meeting(date: date));
   }
   return classSet.meetings[date]!;
@@ -98,9 +96,15 @@ Meeting addMeetingToClassSet(
 
 void addAttendeeToMeeting(
     {required Meeting meeting, required String name, required String email}) {
-  if (meeting.attendees.isNotEmpty && !meeting.attendees.containsKey(name)) {
+  //TODO: for multi login, add durations
+  stdout
+      .writeln('attendees Map length: ' + meeting.attendees.length.toString());
+  if (meeting.attendees.isEmpty || !meeting.attendees.containsKey(name)) {
+    stdout.writeln('adding attendee $name');
     meeting.attendees.putIfAbsent(
         name, () => Attendee(name: name, email: email, date: meeting.date));
+  } else {
+    stdout.writeln(name + ' is already added');
   }
 }
 
@@ -114,12 +118,26 @@ void populateAttendanceRecords() {
     }
     //check attendance of each student
     for (var student in classSet.students.entries) {
+      //stdout.writeln('checking attendance for' + student.value.fullName);
+      //for each meeting (aka number of dates)
       for (var meeting in classSet.meetings.entries) {
-        //consider adding a set of recorded dates to not run this unnecessarily
+        //var attendeeKey; //for deletion
         for (var attendee in meeting.value.attendees.entries) {
-          markPresent(attendee: attendee.value, student: student.value);
-          meeting.value.attendees.remove(attendee.key);
+          //attendeeKey = attendee.key;
+          if (attendee.value.name
+              .toLowerCase()
+              .contains(student.value.zoomName)) {
+            stdout.writeln(student.value.fullName + ' has been marked present');
+            student.value.attendanceRecords
+                .update(attendee.value.date, (value) => 'present');
+            meeting.value.numPresent += 1;
+            break; //stop scanning attendees list when one is found
+          } else {
+            stdout.writeln(
+                'searching attendee names for ' + student.value.zoomName);
+          }
         }
+        //TODO:meeting.value.attendees.remove(attendeeKey);
       }
     }
   }
@@ -127,20 +145,21 @@ void populateAttendanceRecords() {
 
 void populateDates({required String date, required ClassSet classSet}) {
   for (var student in classSet.students.entries) {
+    //stdout.writeln('adding ' + student.value.fullName + ' blank date record');
     student.value.attendanceRecords.putIfAbsent(date, () => 'absent');
   }
 }
 
-void markPresent({required Attendee attendee, required Student student}) {
-  if (attendee.name.toLowerCase().contains(student.zoomName)) {
-    student.attendanceRecords.update(attendee.date, (value) => 'present');
-  } else {}
-}
-
+//TODO: output unaccounted records for manual review //depends on attendee deletion
 void saveAttendanceRecords() {
   //concatenate columnheadingsrow with dates list
   //save main sheets for each classSet
   for (var classSet in cohort) {
+    //delete if exists
+    if (File('../generated_csv/' + classSet.displayName + '.csv')
+        .existsSync()) {
+      File('../generated_csv/' + classSet.displayName + '.csv').deleteSync();
+    }
     //add dates list to double check
     var meetingDates = [];
     var columnHeadingsRow = ['Full Name', 'Form Class'];
@@ -150,7 +169,7 @@ void saveAttendanceRecords() {
       meetingDates.add(meeting.value.date);
       columnHeadingsRow.add(meeting.value.date);
     }
-    List<List<dynamic>> csvRowList = [];
+    var csvRowList = <List<dynamic>>[];
     csvRowList.add(columnHeadingsRow);
     //for each student, create a row
     for (var student in classSet.students.entries) {
@@ -165,6 +184,17 @@ void saveAttendanceRecords() {
       }
       csvRowList.add(csvStudentRow);
     }
+    //add footer with numPresent
+    var columnFooterRow = [
+      'NA',
+      'NA',
+    ];
+    for (var meeting in classSet.meetings.entries) {
+      //concatenate columnheadingsrow with dates list
+      columnFooterRow.add(meeting.value.numPresent.toString());
+    }
+    //add footer to CSV
+    csvRowList.add(columnFooterRow);
     //convert to Csv String
     final res = const ListToCsvConverter().convert(csvRowList);
     //create file

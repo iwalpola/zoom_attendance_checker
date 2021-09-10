@@ -18,6 +18,7 @@ class Student {
 
 class Meeting {
   final String date;
+  int numPresent = 0;
   Map<String, Attendee> attendees = {};
   Meeting({required this.date});
 }
