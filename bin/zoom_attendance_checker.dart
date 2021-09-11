@@ -192,9 +192,9 @@ void saveAttendanceRecords() {
     }
     //add footer with numPresent
     var columnFooterRow = [
-      'NA',
-      'NA',
+      'PresentCount',
     ];
+    columnFooterRow.add('Total: ' + classSet.value.students.length.toString());
     for (var meetingDate in classSet.value.meetings.entries) {
       columnFooterRow.add(meetingDate.value.toString()); //presentcount
     }
