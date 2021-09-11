@@ -20,15 +20,15 @@ This is a tool to compare a comma separated list of your students with zoom acti
 [root of this repo]>dart pub get
 ```
 - In the /students folder, make a new file called '13C.csv'
-- Edit the csv file to make a list of comma separated first names (example provided). You can also add some additional text data like their surname.
+- Edit the data.dart file, (sample provided in data.sample.dart). You can also add some additional text data like their surname.
+- (you can also use generateStudentsFromCsv.dart along with some sc data in /students (sample provided))
 - Login to the zoom web app, go to https://zoom.us/account/report/user
-- Find your meeting and click the blue link in the 'participants' column to bring up the list of attendees
-- Check the box to "Show Unique Users", and click "Export" button
-- Save the csv file in /attendance folder as '13C.csv'
+- Select a date range and export meeting list with details
+- Download and copy the csv file in the root folder (same place as activehosts.sample.csv)
 - Change line 7 of the zoom_attendance_checker.dart file
-- Do the following
+- Do the followingS
 ```sh
-[root of this repo]>dart run ./bin/zoom_attendance_checker.dart -a
+[bin folder]>dart run zoom_attendance_checker.dart -a
 ```
 
 ## License

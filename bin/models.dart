@@ -1,12 +1,11 @@
 class ClassSet {
   final String meetingId, displayName;
-  final Map<String, Student> students;
+  final List<Student> students;
   ClassSet(
       {required this.meetingId,
       required this.displayName,
       required this.students});
-
-  Map<String, Meeting> meetings = {};
+  Map<String, int> meetings = {};
 }
 
 class Student {
@@ -14,16 +13,4 @@ class Student {
   Map<String, String> attendanceRecords = {};
   Student(
       {required this.fullName, required this.zoomName, this.extraData = ''});
-}
-
-class Meeting {
-  final String date;
-  int numPresent = 0;
-  Map<String, Attendee> attendees = {};
-  Meeting({required this.date});
-}
-
-class Attendee {
-  final String name, email, date;
-  Attendee({required this.name, required this.email, required this.date});
 }
